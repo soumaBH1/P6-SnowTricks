@@ -35,61 +35,72 @@ En premier lieu, il vous faudra écrire l’ensemble des issues/tickets afin de 
 L’ensemble des figures de snowboard doivent être présentes à l’initialisation de l’application web. Vous utiliserez un bundle externe pour charger ces données. 
 
  
-De l’aide pour aborder le projet étape par étape
-Afin de fluidifier votre avancement voici une proposition de manière de travailler :
+Page d’accueil - Liste des figures de snowboard
+La page est accessible par tous les utilisateurs. On y verra la liste des noms de figures. L’utilisateur a la possibilité de cliquer sur le nom d’une figure pour accéder à la page de détails de cette figure.
 
-Étape 1 - Prenez connaissance entièrement de l’énoncé et des spécifications détaillées.
-Étape 2 - Produisez les diagrammes UML (modèle de données, classes, séquences, uses cases).
-Étape 3 - Créez le repository GitHub pour le projet.
-Étape 4 - Créez l’ensemble des issues sur le repository GitHub (https://github.com/username/nom_du_repo/issues/new).
-Étape 5 - Faites les estimations de l’ensemble de vos issues.
-Étape 6 - Entamez le développement de l’application et proposez des pull requests pour chacune des fonctionnalités/issues.
-Étape 7 - Faites relire votre code à votre mentor (code proposé dans la ou les pull requests), et une fois validée(s), mergez la ou les pull requests dans la branche principale. (Cette relecture servira à valider votre implémentation des bonnes pratiques et la cohérence de votre code. La validation se fera en continu durant les sessions.)
-Étape 8 - Effectuez une démonstration de l’ensemble de l’application.
-Étape 9 - Préparez l’ensemble de vos livrables et soumettez-les sur la plateforme.
-Prenez le temps de valider chaque étape avec votre mentor afin de vous assurer que vous avancez dans la bonne direction. ^^
-Livrables
-Un fichier au format TXT contenant un lien vers un repository Github contenant l’ensemble du projet :
-Tout le code nécessaire (fichiers PHP/HTML/JS/CSS) ;
-Un fichier README à la racine du dossier et contenant les instructions pour installer le projet ;
-Un dossier contenant l’ensemble des diagrammes demandés (modèles de données, classes, use cases, séquentiels)
-Les issues sur le repository GitHub que vous aurez créé
-Jeu de données initiales avec l’ensemble des figures de snowboard
-Un fichier au format TXT contenant un lien vers la dernière analyse SymfonyInsight, Codacy ou Codeclimate (ou vers le projet public sur la plateforme).
-Pour faciliter votre passage devant le jury, déposez sur la plateforme, dans un dossier zip nommé “Titre_du_projet_nom_prénom”, avec tous les livrables du projet comme suit : Nom_Prénom_n° du livrable_nom du livrable__date de démarrage du projet. Cela donnera : 
+Si l’utilisateur est connecté, il pourra cliquer sur :
+●	une petit icône en forme de stylo situé juste à côté du nom qui redirigera l’utilisateur vers un formulaire de modification de figure ;
+●	une corbeille située juste à côté du nom pour supprimer la figure.
+Page de création de figure de snowboard
+Le formulaire comportera les champs suivants :
+●	nom ;
+●	description ;
+●	groupe de la figure ;
+●	une ou plusieurs illustration(s) ;
+●	une ou plusieurs vidéo(s).
 
-Nom_Prénom_1_repository_git_mmaaaa ;
-Nom_Prénom_2_analyse_code_mmaaaa.
-Par exemple, le premier livrable peut être nommé comme suit : Dupont_Jean_1_repository_git_012022.
+Le formulaire n’est accessible que si l’utilisateur est authentifié.
 
-Soutenance
-La soutenance, d’une durée maximum de 30 minutes, se déroulera en 3 étapes :
+Lorsque l’utilisateur soumet le formulaire, il faut que :
+●	cette figure n’existe pas déjà en base de données (contrainte d’unicité sur le nom) ;
+●	il soit redirigé sur la page du formulaire en cas d'erreur, en précisant le(s) type(s) d'erreurs ;
+●	il soit redirigé sur la page listant des figures avec un message flash donnant une indication concernant le bon déroulement de l'enregistrement en base de données en cas de succès.
 
-Présentation des livrables (20 minutes) 
-À l'oral, en condition réelle, vous présenterez votre projet. L'évaluateur jouera le rôle de Jimmy Sweat. Voici comment vous pouvez organiser votre présentation :
-Présentation globale du projet : rappelez le contexte du projet, ainsi que l'analyse de besoin en vous focalisant sur une fonctionnalité et en présentant ses diagrammes UML. Résumez également l'organisation du projet et la méthodologie de gestion de projet adoptée.
-Démonstration de l'application : présentez l'ensemble des fonctionnalités de l'application.‌
-Présentez votre projet du point de vue technique cette fois-ci :
+Pour les vidéos, l’utilisateur pourra coller une balise embed provenant de la plateforme de son choix (Youtube, Dailymotion…).
+Page de modification de figure de snowboard
+Les besoins sont les mêmes que pour la création. La seule différence est qu’il faut que les champs soient pré-remplis au moment où l’utilisateur arrive sur cette page.
+Page de présentation d’une figure
+Les informations suivantes doivent figurer sur la page :
+●	nom de la figure ;
+●	sa description ;
+●	le groupe de la figure ;
+●	la ou les photos rattachées à la figure ;
+●	la ou les vidéos rattachées à la figure ;
+●	l’espace de discussion (plus de détails à la section suivante).
 
-montrez comment vous avez versionné votre projet ;
-présentez l'architecture technique que vous avez mise en place ;
-listez les librairies que vous avez choisies et expliquer comment vous les avez intégrées ;
-choisissez une pull request correspondant à une tâche sur GitHub et détaillez comment vous avez mené à bien cette tâche ;
-présentez une analyse SymfonyInsight ou Codacy et expliquez les correctifs apportés ;
-expliquez comment vous avez procédé pour garantir la mise en place des bonnes pratiques en vigueur.‌
-Discussion (5 minutes) 
-Echange de questions/réponses. L’évaluateur pourra revenir sur certains points pour vous questionner sur vos choix.
-Debriefing (5 minutes)
-Votre évaluateur reprendra son rôle de mentor et vous fera un retour sur votre prestation en soutenance.
- Votre présentation devrait durer 20 minutes (+/- 7 minutes). Puisque le respect de la durée des présentations est important en milieu professionnel, les présentations en dessous de 13 minutes ou au-dessus de 27 minutes peuvent être refusées. 
+La manière dont vous souhaitez disposer les informations est laissée à votre imagination. Le but étant que ce soit agréable et facile à consulter pour un utilisateur. Inspirez-vous de ce qui existe. 😉
 
- 
+Les URL des pages des figures doivent contenir le nom de la figure sous forme de slug.
+Espace de discussion commun autour d’une figure
+Les utilisateurs qui ne sont pas authentifiés peuvent consulter les discussions de toutes les figures. En revanche, ils ne peuvent pas poster de message.
 
-Compétences évaluées
-Prendre en main le framework Symfony
-Développer une application proposant les fonctionnalités attendues par le client
-Gérer une base de données MySQL ou NoSQL avec Doctrine
-Organiser son code pour garantir la lisibilité et la maintenabilité
-Prendre en main le moteur de templating Twig
-Respecter les bonnes pratiques de développement en vigueur
-Sélectionner les langages de programmation adaptés pour le développement de l’application
+Pour chaque message, il sera affiché les informations suivantes :
+●	le nom complet de l’auteur du message ;
+●	la photo de l’auteur du message ;
+●	la date de création du message ;
+●	le contenu du message.
+
+Dans cet espace de discussion, on peut voir la liste des messages postés par les membres, du plus récent au plus ancien.
+Ces messages doivent être paginés (10 par page).
+
+Si l’utilisateur est authentifié, il peut voir un formulaire au-dessus de la liste avec un champs “message” qui est obligatoire. L’utilisateur peut poster autant de messages qu’il le souhaite.
+Page de connexion
+La connexion se fait sur une page dédiée via le nom d’utilisateur et le mot de passe.
+
+Un bouton « mot de passe oublié » est présent et redirige l’utilisateur sur la page de mot de passe oublié.
+Page d’inscription
+La page d’inscription présente un formulaire qui demande :
+•	le nom d’utilisateur ;
+•	l’adresse email ;
+•	le mot de passe.
+
+Une fois ces informations entrées, l’utilisateur reçoit un email permettant de valider la création du compte et d’activer le compte (via un token de validation par exemple).
+
+Page d’oubli du mot de passe
+Lorsque l’utilisateur a oublié son mot de passe, il peut cliquer sur « mot de passe oublié » et sera redirigé vers la page d’oubli du mot de passe.
+
+Sur celle-ci, il lui sera demandé son nom d’utilisateur via un formulaire. Une fois entré, il recevra un email avec un lien de création de nouveau mot de passe qui l’emmènera vers la page de réinitialisation du mot de passe. 
+Page réinitialisation du mot de passe
+Une fois arrivé sur cette page, l’utilisateur peut entrer un nouveau mot de passe via un formulaire.
+
+Une fois son mot de passe changé, l’utilisateur sera redirigé vers la page d’accueil.
