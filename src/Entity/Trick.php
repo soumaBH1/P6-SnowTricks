@@ -2,14 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\ArticleRepository;
+use App\Repository\TrickRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-#[ORM\Entity(repositoryClass: ArticleRepository::class)]
-class Article
+
+#[ORM\Entity(repositoryClass: TrickRepository::class)]
+class Trick
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -17,25 +18,25 @@ class Article
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\Length(min:10, max:255, minMessage:"votre titre est trop court!")] //validation du contenue titre (min et max)
+    #[Assert\Length(min: 10, max: 255, minMessage: "votre titre est trop court!")] //validation du contenue titre (min et max)
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\Length(min:10)] 
+    #[Assert\Length(min: 10)]
     private ?string $content = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\Url()] 
+    #[Assert\Url()]
     private ?string $image = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'articles')]
+    #[ORM\ManyToOne(inversedBy: 'tricks')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
 
-    #[ORM\OneToMany(mappedBy: 'article', targetEntity: Comment::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'trick', targetEntity: Comment::class, orphanRemoval: true)]
     private Collection $comments;
 
     public function __construct()
@@ -120,7 +121,7 @@ class Article
     {
         if (!$this->comments->contains($comment)) {
             $this->comments->add($comment);
-            $comment->setArticle($this);
+            $comment->setTrick($this);
         }
 
         return $this;
@@ -130,8 +131,8 @@ class Article
     {
         if ($this->comments->removeElement($comment)) {
             // set the owning side to null (unless already changed)
-            if ($comment->getArticle() === $this) {
-                $comment->setArticle(null);
+            if ($comment->getTrick() === $this) {
+                $comment->setTrick(null);
             }
         }
 

@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Figures!{% endblock %}
+
+{% block body %}
+<section class="trick">
+       <section class="trick">
+        <h2> {{trick.title}} </h2>
+    <div class="metadata">Ecrit le {{trick.createdAt| date('d/m/Y')}} à {{trick.createdAt| date('H:i')}}dans la catégolie {{trick.category.title}}}</div>
+        <div class="content">
+        <img src="{{ trick.image }}" alt="">
+        <p>{{ trick.content | raw }}</p>
+        <hr>
+
+</div>
+</trick>
+<section id="commentaires">
+    <h1> {{trick.comments | length }} commentaires : </h1>
+{% for comment in trick.comments %}
+    <div class="comment">
+        <div class="row">
+            <div class="col3">
+                {{comment.author}} (<small>{{comment.createdAt | date('d/m/y à H:i')}}</small>)
+            </div>
+            <div class="col">
+                {{comment.content | raw}}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% if app.user %}
+    {{form_start(commentForm)}}
+    {{form_row(commentForm.author, {'attr': {'placeholder': "votre nom"}})}}
+    {{form_row(commentForm.content, {'attr': {'placeholder': "votre commentaire"}})}}
+     <button type="submit" class="btn-success">Commenter! </button>
+    <h2> Vous ne pouvez pas commentersi vous n'êtes pas connectés!</h2>
+    <a href="{{path('security_login')}}" class="btn btn-primary"> Connexion </a>
+    {% endif %}
+{% endblock %}

@@ -25,7 +25,7 @@ class Comment
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Article $article = null;
+    private ?Trick $trick = null;
 
     public function getId(): ?int
     {
@@ -68,14 +68,14 @@ class Comment
         return $this;
     }
 
-    public function getArticle(): ?Article
+    public function getTrick(): ?Trick
     {
-        return $this->article;
+        return $this->trick;
     }
 
-    public function setArticle(?Article $article): static
+    public function setTrick(?Trick $trick): static
     {
-        $this->article = $article;
+        $this->trick = $trick;
 
         return $this;
     }

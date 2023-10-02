@@ -16,16 +16,15 @@ class RegistrationType extends AbstractType
             ->add('email')
             ->add('username')
             ->add('password', PasswordType::class)
-            ->add('confirm_password', PasswordType::class)
-        ;
+            ->add('confirm_password', PasswordType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => User::class,
-            'csrf_protection' => true,           
-            'csrf_field_name' => '_token',            
+            'csrf_protection' => true,
+            'csrf_field_name' => '_token',
             'csrf_token_id'   => 'user_item',
         ]);
     }

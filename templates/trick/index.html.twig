@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+<h1 class=   class="fa fa-align-center" aria-hidden="true"> Liste des snowTricks: </h1>
+{% for trick in tricks %}
+<hr>
+<section class="trick">
+        <h2> {{trick.title}} </h2>
+    <div class="metadata">Ecrit le {{trick.createdAt| date('d/m/Y')}} à {{trick.createdAt| date('H:i')}}dans la catégolie </div>
+        <div class="content">
+        <img src="{{ trick.image }}" alt="">
+        <p>{{ trick.content| raw }}</p>
+<a href="{{ path('trick_show', {'id': trick.id}) }}" class="btn btn-primary">Lire la suite</a>
+<a href="{{ path('trick_edit', {'id': trick.id}) }}" class="btn btn-primary">Modifier</a>
+</div>
+</trick>
+</section>
+
+{% endfor %}
+
+
+
+
+{% endblock %}

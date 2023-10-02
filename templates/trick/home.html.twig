@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+<h1>Bienvenue dans le site communautaire SnowTricks</h1>
+
+
+{% for trick in tricks %}
+<section class="trick">
+        <h2> {{trick.title}} </h2>
+    <div class="metadata">Ecrit le {{trick.createdAt| date('d/m/Y')}} à {{trick.createdAt| date('H:i')}}dans la catégolie politique</div>
+        <div class="content">
+        <img src="{{ trick.image }}" alt="">
+        <p>{{ trick.content| raw }}</p>
+<a href="{{ path('trick_show', {'id': trick.id}) }}" class="btn btn-primary">Lire la suite</a>
+<a href="{{ path('trick_edit', {'id': trick.id}) }}" class="btn btn-primary">Modifier</a>
+</div>
+</trick>
+{% endfor %}
+
+
+
+</section>
+{% endblock %}

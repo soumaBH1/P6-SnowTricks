@@ -21,17 +21,17 @@ final class Version20230925131807 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE TABLE category (id INT AUTO_INCREMENT NOT NULL, title VARCHAR(255) NOT NULL, description VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('ALTER TABLE article ADD category_id INT NOT NULL');
-        $this->addSql('ALTER TABLE article ADD CONSTRAINT FK_23A0E6612469DE2 FOREIGN KEY (category_id) REFERENCES category (id)');
-        $this->addSql('CREATE INDEX IDX_23A0E6612469DE2 ON article (category_id)');
+        $this->addSql('ALTER TABLE trick ADD category_id INT NOT NULL');
+        $this->addSql('ALTER TABLE trick ADD CONSTRAINT FK_23A0E6612469DE2 FOREIGN KEY (category_id) REFERENCES category (id)');
+        $this->addSql('CREATE INDEX IDX_23A0E6612469DE2 ON trick (category_id)');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE article DROP FOREIGN KEY FK_23A0E6612469DE2');
+        $this->addSql('ALTER TABLE trick DROP FOREIGN KEY FK_23A0E6612469DE2');
         $this->addSql('DROP TABLE category');
-        $this->addSql('DROP INDEX IDX_23A0E6612469DE2 ON article');
-        $this->addSql('ALTER TABLE article DROP category_id');
+        $this->addSql('DROP INDEX IDX_23A0E6612469DE2 ON trick');
+        $this->addSql('ALTER TABLE trick DROP category_id');
     }
 }
