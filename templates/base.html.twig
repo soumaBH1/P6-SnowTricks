@@ -20,24 +20,26 @@
     <div class="collapse navbar-collapse" id="navbarColor01">
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
-          <a class="nav-link" href="/trick">SnowTricks</a>
+          <a class="nav-link" href="/trick">Figures</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/blog/new">Créer un SnowTrick</a>
-        </li>
+       
 
       {% if not app.user %}
         <li class="nav-item">
           <a class="nav-link" href="{{ path('security_login')}}">Connection</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/inscription">S'enregistrer</a>
+        </li>
         {% else %}
+         <li class="nav-item">
+          <a class="nav-link" href="/trick/new">Créer une figure</a>
+        </li>
         <li class="nav-item">
           <a class="nav-link" href="{{ path('security_logout')}}">Déconnection</a>
         </li>
       {% endif %}
-        <li class="nav-item">
-          <a class="nav-link" href="/inscription">S'enregistrer</a>
-        </li>
+        
        
       </ul>
     </div>

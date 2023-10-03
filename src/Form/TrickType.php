@@ -20,8 +20,7 @@ class TrickType extends AbstractType
             ->add('category', EntityType::class, [
                 'class' => Category::class,
                 'choice_label' => 'title'
-            ])
-            ->add('image');
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

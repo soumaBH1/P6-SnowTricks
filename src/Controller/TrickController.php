@@ -49,11 +49,7 @@ class TrickController extends AbstractController
         if ($trick == null) {
             $trick = new Trick();
         }
-        // $form = $this->createFormBuilder($trick)
-        //     ->add('title')
-        //     ->add('content')
-        //     ->add('image')
-        //     ->getForm();
+
         $form = $this->createForm(TrickType::class, $trick);
         $form->handleRequest($request); //analyser la requete http pour analyser si l'ont soumis ou envoie la requete
         dump($trick);
@@ -82,7 +78,7 @@ class TrickController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $comment->setCreatedAt(new \DateTimeImmutable());
             $comment->setTrick($trick);
-            dd($comment);
+            //dd($comment);
             $manager->persist($comment); //enregistrer le comment 
             $manager->flush(); //envoyer dans la BDD
 

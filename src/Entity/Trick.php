@@ -25,10 +25,6 @@ class Trick
     #[Assert\Length(min: 10)]
     private ?string $content = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\Url()]
-    private ?string $image = null;
-
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
@@ -73,17 +69,8 @@ class Trick
         return $this;
     }
 
-    public function getImage(): ?string
-    {
-        return $this->image;
-    }
 
-    public function setImage(string $image): static
-    {
-        $this->image = $image;
 
-        return $this;
-    }
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
