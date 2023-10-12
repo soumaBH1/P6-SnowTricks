@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use DateTime;
+use App\Entity\Image;
 use App\Entity\Trick;
 use App\Entity\Comment;
 use App\Form\TrickType;
@@ -46,20 +47,35 @@ class TrickController extends AbstractController
     public function form(Trick $trick = null, Request $request, ObjectManager $manager)
     {
         //créer et MAJ
+
         if ($trick == null) {
             $trick = new Trick();
         }
 
         $form = $this->createForm(TrickType::class, $trick);
         $form->handleRequest($request); //analyser la requete http pour analyser si l'ont soumis ou envoie la requete
-        dump($trick);
+
         if ($form->isSubmitted() && $form->isValid()) {
+            //on recupere les images transmises
+            $images = $form->get('images')->getData();
+            foreach ($images as $image) {
+                //générer un nouveau nom de fichier
+                $fichier = md5(uniqid()) . '.' . $image->guessExtension();
+                //copier le fichier dans le dossier uploads
+                $image->move(
+                    $this->getParameter('image_directory'),
+                    $fichier
+                );
+                //on stocke l'image dans la BDD
+                $img = new Image();
+                $img->setName($fichier);
+                $trick->addImage($img);
+            }
             if (!$trick->getID()) { //si l'trick n'a pas d'identifiant donc il s'agit de création
                 $trick->setCreatedAt(new \DateTimeImmutable());
             }
             $manager->persist($trick);
             $manager->flush();
-
             //afficher l trick crée
             return $this->redirectToRoute('trick_show', ['id' => $trick->getId()]);
         }
@@ -71,6 +87,20 @@ class TrickController extends AbstractController
     #[Route('/trick/{id}', name: 'trick_show')]
     public function show(Trick $trick, Request $request, ObjectManager $manager)
     {
+
+        //ajouter une image
+        $image = new Image();
+        $form = $this->createForm(ImageType::class, $image);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $image->setTrick($trick);
+            $manager->persist($image); //enregistrer le comment 
+            $manager->flush(); //envoyer dans la BDD
+            return $this->redirectToRoute('trick_show', ['id' => $trick->getId()]);
+        }
+
+
+        //ajouter un commentaire
         $comment = new Comment();
         $form = $this->createForm(CommentType::class, $comment);
         $form->handleRequest($request);

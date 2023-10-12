@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+
+    <h1>Réinitialisation de mot de passe ! </h1>
+    <form method="post" action="{{ path('security_forget')}}">
+    <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" name="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email">
+        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Réintialiser le mot de passe</button>
+</form>
+   {% endblock %}

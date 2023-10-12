@@ -24,6 +24,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     private ?string $username = null;
+    
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 8, minMessage: "votre mot de passe doit faire minimum 8 caracteres !")] //validation du contenue titre (min et max)
@@ -59,6 +60,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    //
 
     public function getPassword(): ?string
     {

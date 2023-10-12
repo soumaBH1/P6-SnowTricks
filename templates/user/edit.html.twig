@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modification de l'utilisateur{% endblock %}
+
+{% block body %}
+
+
+    <h1>Modification de l'utilisateur ! </h1>
+       {% for message in app.flashes('warning') %}
+       <div class="alert-warning mt4">
+       {{message}}
+       </div>
+       {% endfor %}
+        {{form_start(form) }}
+        {{form_row(form.username, {'label': 'Nom de l\utilisateur','attr': {'placeholder': 'Nom de l\utilisateur..'}}) }}
+        {{form_row(form.password, {'label': 'Mot de passe','attr': {'placeholder': 'Mot de passe..'}}) }}
+   <button type="submit" class="btn-success">Modifier </button>
+    {{form_end(form) }}
+    
+    
+    
+
+{% endblock %}
