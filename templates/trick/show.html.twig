@@ -14,7 +14,16 @@
             </div>
         </trick>
         
-       
+         {# Vérifier si la route est "trick_edit" on affiche les images #}
+   {# {% if app.request.attributes.get('_route') == 'trick_edit' %} #}
+        <h2>Images</h2>
+        {% for image in trick.images %}
+            <div>
+                <img src="{{ asset('/uploads/' ~ image.name) }}" alt="Image" width="150">
+                <a href="{{ path('trick_delete_image', {id: image.id}) }}" data-delete data-token="{{ csrf_token('delete' ~ image.id) }}">Supprimer</a>
+            </div>
+        {% endfor %}
+   
 <section id="commentaires">
    {% if app.user %}
 
@@ -45,4 +54,7 @@
     </div>
     {% endfor %}
     
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('js/images.js') }}"></script>
 {% endblock %}

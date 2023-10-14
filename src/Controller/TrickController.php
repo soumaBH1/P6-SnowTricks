@@ -6,6 +6,7 @@ use DateTime;
 use App\Entity\Image;
 use App\Entity\Trick;
 use App\Entity\Comment;
+use App\Form\ImageType;
 use App\Form\TrickType;
 use App\Form\CommentType;
 use App\Repository\TrickRepository;
@@ -17,6 +18,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitTypeType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TrickController extends AbstractController
 {
@@ -63,12 +65,13 @@ class TrickController extends AbstractController
                 $fichier = md5(uniqid()) . '.' . $image->guessExtension();
                 //copier le fichier dans le dossier uploads
                 $image->move(
-                    $this->getParameter('image_directory'),
+                    $this->getParameter('images_directory'),
                     $fichier
                 );
                 //on stocke l'image dans la BDD
                 $img = new Image();
                 $img->setName($fichier);
+                $img->setPath($fichier);
                 $trick->addImage($img);
             }
             if (!$trick->getID()) { //si l'trick n'a pas d'identifiant donc il s'agit de création
@@ -77,7 +80,7 @@ class TrickController extends AbstractController
             $manager->persist($trick);
             $manager->flush();
             //afficher l trick crée
-            return $this->redirectToRoute('trick_show', ['id' => $trick->getId()]);
+            return $this->redirectToRoute('trick_show', ['id' => $trick->getId(), 'trick' => $trick]);
         }
         return $this->render('trick/create.html.twig', [
             'formTrick' => $form->createView(),
@@ -88,32 +91,60 @@ class TrickController extends AbstractController
     public function show(Trick $trick, Request $request, ObjectManager $manager)
     {
 
-        //ajouter une image
-        $image = new Image();
-        $form = $this->createForm(ImageType::class, $image);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $image->setTrick($trick);
-            $manager->persist($image); //enregistrer le comment 
-            $manager->flush(); //envoyer dans la BDD
-            return $this->redirectToRoute('trick_show', ['id' => $trick->getId()]);
-        }
-
-
         //ajouter un commentaire
         $comment = new Comment();
         $form = $this->createForm(CommentType::class, $comment);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            //on recupere les images transmises
+            $images = $form->get('images')->getData();
+            foreach ($images as $image) {
+                //générer un nouveau nom de fichier
+                $fichier = md5(uniqid()) . '.' . $image->guessExtension();
+                //copier le fichier dans le dossier uploads
+                $image->move(
+                    $this->getParameter('images_directory'),
+                    $fichier
+                );
+                //on stocke l'image dans la BDD
+                $img = new Image();
+                $img->setName($fichier);
+                $img->setPath($fichier);
+                $trick->addImage($img);
+            }
             $comment->setCreatedAt(new \DateTimeImmutable());
             $comment->setTrick($trick);
             //dd($comment);
             $manager->persist($comment); //enregistrer le comment 
             $manager->flush(); //envoyer dans la BDD
 
-            return $this->redirectToRoute('trick_show', ['id' => $trick->getId()]);
+            return $this->redirectToRoute('trick_show', ['id' => $trick->getId(), 'trick' => $trick]);
         }
         return $this->render('trick/show.html.twig', ['trick' => $trick, 'commentForm' => $form->createView()]);
+    }
+
+    #[Route("/supprime/image/{id}", name: "trick_delete_image", methods: ["DELETE"])]
+
+    public function deleteImage(Image $image, Request $request, ObjectManager $manager)
+    {
+        $data = json_decode($request->getContent(), true);
+        dd($image->getId(), $data['_token']);
+        // On vérifie si le token est valide
+        if ($this->isCsrfTokenValid('delete' . $image->getId(), $data['_token'])) {
+            // On récupère le nom de l'image
+            $nom = $image->getName();
+            // On supprime le fichier
+            unlink($this->getParameter('images_directory') . '/' . $nom);
+
+            // On supprime l'entrée de la base
+            $manager->remove($image);
+            $manager->flush();
+
+            // On répond en json
+            return new JsonResponse(['success' => 1]);
+        } else {
+            return new JsonResponse(['error' => 'Token Invalide'], 400);
+        }
     }
 }
