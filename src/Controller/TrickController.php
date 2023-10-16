@@ -123,13 +123,22 @@ class TrickController extends AbstractController
         }
         return $this->render('trick/show.html.twig', ['trick' => $trick, 'commentForm' => $form->createView()]);
     }
+    #[Route('/trick/{id}/delete', name: 'trick_delete')]
+    public function deleteTrick(trick $trick, Request $request, ObjectManager $manager)
+    {
+
+        $manager->remove($trick);
+        $manager->flush();
+
+        return $this->redirectToRoute("trick");
+    }
 
     #[Route("/supprime/image/{id}", name: "trick_delete_image", methods: ["DELETE"])]
 
     public function deleteImage(Image $image, Request $request, ObjectManager $manager)
     {
         $data = json_decode($request->getContent(), true);
-        dd($image->getId(), $data['_token']);
+
         // On vérifie si le token est valide
         if ($this->isCsrfTokenValid('delete' . $image->getId(), $data['_token'])) {
             // On récupère le nom de l'image
