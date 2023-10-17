@@ -5,8 +5,8 @@
 {% block body %}
 <section class="trick">
        <section class="trick">
-            <h2> {{trick.title}} </h2>
-            <div class="metadata">Ecrit le {{trick.createdAt| date('d/m/Y')}} à {{trick.createdAt| date('H:i')}}dans la catégolie {{trick.category.title}}}</div>
+            <h2>Figure: {{trick.title}} </h2>
+            <div class="metadata">Ecrit le {{trick.createdAt| date('d/m/Y')}} à {{trick.createdAt| date('H:i')}}dans la catégolie {{trick.category.title}}</div>
                 <div class="content">
                 <p>{{ trick.content | raw }}</p>
                 <hr>
@@ -14,13 +14,29 @@
             </div>
         </trick>
         
-         {# Vérifier si la route est "trick_edit" on affiche les images #}
-   {# {% if app.request.attributes.get('_route') == 'trick_edit' %} #}
+          {% if trick.images | length != 0 %}
         <h2>Images</h2>
+        {% endif %} 
         {% for image in trick.images %}
             <div>
                 <img src="{{ asset('/uploads/' ~ image.name) }}" alt="Image" width="150">
+               {% if app.user %}
                 <a href="{{ path('trick_delete_image', {id: image.id}) }}" data-delete data-token="{{ csrf_token('delete' ~ image.id) }}">Supprimer</a>
+             {% endif %} </hr>
+            </div>
+        {% endfor %}
+        {% if trick.videos | length != 0 %}
+        <h2>Videos:</h2>
+         {% endif %}
+        {% for video in trick.videos %}
+            <div>
+               <li data-target="#carousel-v" data-slide-to="{{ loop.index0 }}" {% if loop.index0 == 0 %} class="active" {% endif %}></li>
+             <div class="carousel-item {% if loop.index0 == 0 %} active {% endif %}">
+                                                    <iframe src="{{ video.url }}" allowfullscreen></iframe>
+                                                </div>
+             {% if app.user %}
+                <a href="{{ path('trick_delete_image', {id: image.id}) }}" data-delete data-token="{{ csrf_token('delete' ~ video.id) }}">Supprimer</a>
+             {% endif %} </hr>
             </div>
         {% endfor %}
    
@@ -39,8 +55,9 @@
     <h2> Vous ne pouvez pas commenter si vous n'êtes pas connectés!</h2>
     <a href="{{path('security_login')}}" class="btn btn-primary"> Connexion </a>
     {% endif %} </hr>
-   
-    <h1> {{trick.comments | length }} commentaires : </h1>
+   {% if trick.comments | length != 0  %}
+   <h1> {{trick.comments | length }} commentaires : </h1>
+     {% endif %} </hr>
     {% for comment in trick.comments %}
      <div class="comment">
         <div class="row">

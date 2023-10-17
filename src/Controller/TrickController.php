@@ -5,6 +5,7 @@ namespace App\Controller;
 use DateTime;
 use App\Entity\Image;
 use App\Entity\Trick;
+use App\Entity\Video;
 use App\Entity\Comment;
 use App\Form\ImageType;
 use App\Form\TrickType;
@@ -14,11 +15,11 @@ use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitTypeType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TrickController extends AbstractController
 {
@@ -63,6 +64,9 @@ class TrickController extends AbstractController
             foreach ($images as $image) {
                 //générer un nouveau nom de fichier
                 $fichier = md5(uniqid()) . '.' . $image->guessExtension();
+                //TO Do créer un dossier par trick
+
+
                 //copier le fichier dans le dossier uploads
                 $image->move(
                     $this->getParameter('images_directory'),
@@ -77,11 +81,24 @@ class TrickController extends AbstractController
             if (!$trick->getID()) { //si l'trick n'a pas d'identifiant donc il s'agit de création
                 $trick->setCreatedAt(new \DateTimeImmutable());
             }
+            //******On Sauvegarde les liens video */
+            $url = $form->get('video')->getData();
+
+            if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $video->getUrl(), $match)) {
+                $video = new Video();
+                $video_id = $match[1];
+                $video->setUrl('https://www.youtube.com/embed/' . $video_id);
+
+                $trick->addVideo($video);
+            }
+
+
             $manager->persist($trick);
             $manager->flush();
-            //afficher l trick crée
+            //afficher le trick crée
             return $this->redirectToRoute('trick_show', ['id' => $trick->getId(), 'trick' => $trick]);
         }
+
         return $this->render('trick/create.html.twig', [
             'formTrick' => $form->createView(),
             'editMode' => $trick->getId() !== null
