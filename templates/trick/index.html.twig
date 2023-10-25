@@ -1,25 +1,34 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{% endblock %}
+{% block title %}Liste des Tricks{% endblock %}
 
 {% block body %}
-<h2 class=   class="fa fa-align-center" aria-hidden="true"> Liste des figures: </h2>
-{% for trick in tricks %}
-    <hr>
-    <section class="trick">
-        <h3> {{trick.title}} </h3>
-        <div class="metadata">Ecrit le {{trick.createdAt| date('d/m/Y')}} à {{trick.createdAt| date('H:i')}}dans la catégolie </div>
-        <div class="content">    
-            <p>{{ trick.content| raw }}</p>
-        
-        <a href="{{ path('trick_show', {'id': trick.id}) }}" class="btn btn-primary">Lire la suite</a>
-        {% if app.user %}
-        <a href="{{ path('trick_edit', {'id': trick.id}) }}" class="btn btn-primary">Modifier</a>
-        <a href="{{ path('trick_delete', {'id': trick.id}) }}" class="btn btn-primary"> Supprimer </a>
-        {% endif %}
-        </div>
-    
-    </trick>
 
-{% endfor %}
+    <h2 class="fa fa-align-center" aria-hidden="true"> Liste des Tricks: </h2>
+    <!-- Start Tricks -->
+    <span class="tricks-anchor" id="tricks"></span>
+    <div class="container p-5">
+        <div class="row">
+            {% for trick in tricks %}
+           
+              <div class="col-lg-4 mb-4 trick">              
+                    <div class="card">
+                        <a href="{{ path('trick_show', {'id': trick.id}) }}"><img class="card-img-top home" src="{{ asset('/uploads/' ~ trick.image) }}" alt="Image" width="50"></a>
+                        <div class="card-body test">
+                            <a class="btn btn-outline-info btn-sm trick-link" href="{{ path('trick_show', {'id': trick.id}) }}" target="_blank">{{ trick.title }}</a>
+                            <a href="{{ path('trick_show', {'id': trick.id}) }}" class="btn btn-primary">Lire la suite</a>
+                            {% if app.user %}
+                                <a  class="float-right change-link ml-3 mr-3 pt-2" href="{{ path('trick_edit', {'id': trick.id}) }}" class="btn btn-primary">Modifier</a>
+                                <a class="float-right change-link ml-2 pt-2" href="{{ path('trick_delete', {'id': trick.id}) }}" class="btn btn-primary"> Supprimer </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="metadata">Ecrit le {{trick.createdAt| date('d/m/Y')}} à {{trick.createdAt| date('H:i')}}dans la catégolie 
+                    </div>
+                </div>
+            {% endfor %}
+        </div>  
+    </div>
+
+
 {% endblock %}

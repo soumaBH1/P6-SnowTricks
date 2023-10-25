@@ -1,9 +1,41 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-<h2>Bienvenue dans le site communautaire SnowTricks</h2>
+<!-- Start Home Image -->
+    <div class="w-100 h-100">
+        <div class="home-bg">          
+            <div class="container">
+                <span class="slogan"><p class="slogan-p">Bienvenue dans le site communautaire SnowTricks</p></span>
+            </div>
+        </div>           
+    </div>
+    <!-- End Home Image -->
 
-<h2 class=   class="fa fa-align-center" aria-hidden="true"> Liste des figures snowTricks: </h2>
-{% for trick in tricks %}
+    <h2 class=   class="fa fa-align-center" aria-hidden="true"> Liste des figures snowTricks: </h2>
+
+    <div class="container p-5">
+        <div class="row">
+            {% for trick in tricks %}
+                <!--===== -->
+                    <div class="col-lg-4 mb-4 trick">              
+                        <div class="card">
+                                <a href="{{ path('trick_show', {'id': trick.id}) }}"><img class="card-img-top home" src="/uploads/{{ trick.image }}" alt="Trick"></a>
+                             
+                                <div class="card-body test">
+                                        <a class="btn btn-outline-info btn-sm trick-link" href="{{ path('trick_show', {'id': trick.id}) }}" target="_blank">{{ trick.title }}</a>
+                                        {% if (app.user)  %}
+                                            <a class="float-right change-link ml-3 mr-3 pt-2" href="{{ path('trick_edit', {'id': trick.id}) }}" target="_blank"><i class="fas fa-pen fa-2x"></i></a>
+                                            <a class="float-right change-link ml-2 pt-2" data-toggle="modal" data-target="#deleteTrickModal" data-href="{{ path('trick_delete', {'id': trick.id}) }}"><i class="fas fa-trash-alt fa-2x text-info"></i></a>
+                                        {% endif %}                      
+                                </div>
+                        </div>               
+                    </div>   
+            {% endfor %}
+        </div>         
+    </div>
+        <!-- End Tricks -->
+
+                <!--===== -->
+                {% for trick in tricks %}
     <section class="trick">
 
         <hr>
@@ -16,6 +48,7 @@
             <a href="{{ path('trick_edit', {'id': trick.id}) }}" class="btn btn-primary">Modifier</a>
         </div>
     </trick>
+     </div> </div> <!--===== -->
 {% endfor %}
 
 

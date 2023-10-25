@@ -2,12 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\TrickRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\TrickRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity(repositoryClass: TrickRepository::class)]
 class Trick
@@ -20,6 +21,8 @@ class Trick
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 10, max: 255, minMessage: "votre titre est trop court!")] //validation du contenue titre (min et max)
     private ?string $title = null;
+    #[ORM\Column(length: 255)]
+    private ?string $image = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\Length(min: 10)]
@@ -32,14 +35,30 @@ class Trick
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
 
-    #[ORM\OneToMany(mappedBy: 'trick', targetEntity: Comment::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'trick', targetEntity: Comment::class, orphanRemoval: true, cascade: ['persist'])]
     private Collection $comments;
 
     #[ORM\OneToMany(mappedBy: 'trick', targetEntity: Image::class, orphanRemoval: true, cascade: ['persist'])] //au moment de persist de trick on persiste aussi les images
     private Collection $images;
 
-    #[ORM\OneToMany(mappedBy: 'trick', targetEntity: Video::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'trick', targetEntity: Video::class, orphanRemoval: true, cascade: ['persist'])]
     private Collection $videos;
+
+    #[ORM\ManyToOne(inversedBy: 'tricks', targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private $user;
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
 
     public function __construct()
     {
@@ -52,7 +71,16 @@ class Trick
     {
         return $this->id;
     }
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+    public function setImage(string $image): static
+    {
+        $this->image = $image;
 
+        return $this;
+    }
     public function getTitle(): ?string
     {
         return $this->title;

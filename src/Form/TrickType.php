@@ -18,6 +18,14 @@ class TrickType extends AbstractType
         $builder
             ->add('title')
             ->add('content')
+            ->add('image', FileType::class, [
+                'label' => 'Image',
+                'required' => false,
+                'data_class' => null,
+                'attr' => [
+                    'placeholder' => 'Ajouter ou modifier l\'image principale du trick',
+                ],
+            ])
             ->add('createdAt')
             ->add('category', EntityType::class, [
                 'class' => Category::class,
