@@ -1,31 +1,45 @@
 {% extends 'base.html.twig' %}
 {% form_theme formTrick 'bootstrap_4_layout.html.twig' %}
+{% block title %}{% endblock %}
 {% block body %}
-<h2>création d'un trick</h2>
-<section class="trick">
-{{ form_start(formTrick) }}
-
-    {{form_row(formTrick.title, {'attr': {'placeholder': "Titre de la figure"}}) }}
-    {{form_row(formTrick.category) }}
-    {{form_row(formTrick.content, {'attr': {'placeholder': "Contenue de la figure"}}) }}
-    {{form_row(formTrick.images, {'attr': {'placeholder': "Contenue de l'image"}}) }}
-{{form_row(formTrick.createdAt, {'attr': {'placeholder': "Crée le:"}}) }}
-<button type="submit" class="btn-success">
-    {% if editMode %}
-        Enregistrer
-    {% else %}
-        Ajouter la figure
-    {% endif %}
-</button>
-   {# Vérifier si la route est "trick_edit" on affiche les images #}
-   {# {% if app.request.attributes.get('_route') == 'trick_edit' %} #}
-        <h2>Images</h2>
-        {% for image in trick.images %}
-            <div>
-                <img src="{{ asset('/uploads/' ~ image.name) }}" alt="Image" width="150">
-                <a href="{{ path('trick_delete_image', {id: image.id}) }}" data-delete data-token="{{ csrf_token('delete' ~ image.id) }}">Supprimer</a>
+ <div class="container mt-5">  
+ <!-- Start Create Trick -->
+    <div class="col-lg-12">
+        <div class="card card-small mb-4">
+            <div class="card-header border-bottom">
+                <h6 class="m-0">Ajouter votre trick</h6>
             </div>
-        {% endfor %}
-{{ form_end(formTrick) }}
-<hr>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item p-3">
+                    <div class="row">
+                        <div class="col">
+                            {{ form_start(formTrick) }}
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+
+                                        {{form_row(formTrick.title, {'attr': {'placeholder': "Titre de la figure"}}) }}
+                                        {{form_row(formTrick.category) }}
+                                        {{form_row(formTrick.content, {'attr': {'placeholder': "Contenue de la figure"}}) }}
+                                        {{form_row(formTrick.images, {'attr': {'placeholder': "Contenue de l'image"}}) }}
+                                        {{form_row(formTrick.videos, {'attr': {'placeholder': "Contenue des video"}}) }}
+                                        
+                                        <button type="submit" class="btn-success">
+                                        {% if editMode %}
+                                        Enregistrer
+                                        {% else %}
+                                        Ajouter la figure
+                                        {% endif %}
+                                        </button>
+  
+                                        {{ form_end(formTrick) }}
+                                        <hr>
+                                   
+                                   </div>
+                                </div>
+                            
+                        </div>
+                    </div>
+        </div>
+    </div>     
+</div>
 {% endblock %}

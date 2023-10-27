@@ -5,28 +5,33 @@ namespace App\Controller;
 use DateTime;
 use App\Entity\Image;
 use App\Entity\Trick;
+use App\Entity\Video;
 use App\Entity\Comment;
 use App\Form\ImageType;
 use App\Form\TrickType;
 use App\Form\CommentType;
+use App\Repository\ImageRepository;
 use App\Repository\TrickRepository;
+use App\Repository\VideoRepository;
 use Doctrine\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitTypeType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TrickController extends AbstractController
 {
     #[Route('/trick', name: 'trick')]
-    public function index(TrickRepository $repo): Response
+    public function index(TrickRepository $repo, ImageRepository $repo_image, VideoRepository $repo_video): Response
     {
-        // $repo = $this->getDoctrine()->getRepository(Trick::class);
+
         $tricks = $repo->findAll();
+
         return $this->render('trick/index.html.twig', [
             'controller_name' => 'TrickController',
             'tricks' => $tricks
@@ -58,11 +63,28 @@ class TrickController extends AbstractController
         $form->handleRequest($request); //analyser la requete http pour analyser si l'ont soumis ou envoie la requete
 
         if ($form->isSubmitted() && $form->isValid()) {
+            //enregistrer l'image principale
+            $imageP = $form->get('image')->getData();
+            $fichier_imageP = $trick->getId() . '_' . md5(uniqid()) . '.' . $imageP->guessExtension();
+            //copier le fichier imageP dans le dossier uploads
+            $imageP->move(
+                $this->getParameter('images_directory'),
+                $fichier_imageP
+            );
+            $imgP = new Image();
+            $imgP->setName($fichier_imageP);
+            $imgP->setPath($this->getParameter('images_directory') . '/' . $fichier_imageP);
+            $trick->setImage($fichier_imageP);
+
             //on recupere les images transmises
             $images = $form->get('images')->getData();
             foreach ($images as $image) {
                 //générer un nouveau nom de fichier
-                $fichier = md5(uniqid()) . '.' . $image->guessExtension();
+
+                $fichier = $trick->getTitle() . '_' . md5(uniqid()) . '.' . $image->guessExtension();
+                //TO Do créer un dossier par trick
+
+
                 //copier le fichier dans le dossier uploads
                 $image->move(
                     $this->getParameter('images_directory'),
@@ -71,24 +93,38 @@ class TrickController extends AbstractController
                 //on stocke l'image dans la BDD
                 $img = new Image();
                 $img->setName($fichier);
-                $img->setPath($fichier);
+                $img->setPath($this->getParameter('images_directory') . $fichier);
                 $trick->addImage($img);
             }
-            if (!$trick->getID()) { //si l'trick n'a pas d'identifiant donc il s'agit de création
+            if (!$trick->getID()) { //si le trick n'a pas d'identifiant donc il s'agit de création
                 $trick->setCreatedAt(new \DateTimeImmutable());
+                $trick->setUser($this->getUser());
             }
+            //******On Sauvegarde les liens video */
+            $url = $form->get('videos')->getData();
+
+            if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $url, $match)) {
+                $video = new Video();
+                $video_id = $match[1];
+                $video->setUrl('https://www.youtube.com/embed/' . $video_id);
+
+                $trick->addVideo($video);
+            }
+
+
             $manager->persist($trick);
             $manager->flush();
-            //afficher l trick crée
+            //afficher le trick crée
             return $this->redirectToRoute('trick_show', ['id' => $trick->getId(), 'trick' => $trick]);
         }
+
         return $this->render('trick/create.html.twig', [
             'formTrick' => $form->createView(),
             'editMode' => $trick->getId() !== null
         ]);
     }
     #[Route('/trick/{id}', name: 'trick_show')]
-    public function show(Trick $trick, Request $request, ObjectManager $manager)
+    public function show(Trick $trick, Request $request, ImageRepository $repo_image, VideoRepository $repo_video, EntityManagerInterface $manager): Response
     {
 
         //ajouter un commentaire
@@ -97,31 +133,27 @@ class TrickController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            //on recupere les images transmises
-            $images = $form->get('images')->getData();
-            foreach ($images as $image) {
-                //générer un nouveau nom de fichier
-                $fichier = md5(uniqid()) . '.' . $image->guessExtension();
-                //copier le fichier dans le dossier uploads
-                $image->move(
-                    $this->getParameter('images_directory'),
-                    $fichier
-                );
-                //on stocke l'image dans la BDD
-                $img = new Image();
-                $img->setName($fichier);
-                $img->setPath($fichier);
-                $trick->addImage($img);
-            }
+
             $comment->setCreatedAt(new \DateTimeImmutable());
             $comment->setTrick($trick);
-            //dd($comment);
+
             $manager->persist($comment); //enregistrer le comment 
             $manager->flush(); //envoyer dans la BDD
 
-            return $this->redirectToRoute('trick_show', ['id' => $trick->getId(), 'trick' => $trick]);
+
+            return $this->redirectToRoute('trick_show', [
+                'id' => $trick->getId(),
+                'trick' => $trick
+
+            ]);
         }
-        return $this->render('trick/show.html.twig', ['trick' => $trick, 'commentForm' => $form->createView()]);
+        $images = $repo_image->findBy(['trick' => $trick->getId()]);
+        $videos = $repo_video->findBy(['trick' => $trick->getId()]);
+
+        return $this->render('trick/show.html.twig', [
+            'trick' => $trick, 'commentForm' => $form->createView(),  'images' => $images,
+            'videos' => $videos
+        ]);
     }
     #[Route('/trick/{id}/delete', name: 'trick_delete')]
     public function deleteTrick(trick $trick, Request $request, ObjectManager $manager)
@@ -130,7 +162,7 @@ class TrickController extends AbstractController
         $manager->remove($trick);
         $manager->flush();
 
-        return $this->redirectToRoute("trick");
+        return $this->redirectToRoute("home");
     }
 
     #[Route("/supprime/image/{id}", name: "trick_delete_image", methods: ["DELETE"])]

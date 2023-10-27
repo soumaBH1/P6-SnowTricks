@@ -24,7 +24,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     private ?string $username = null;
-    
+
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 8, minMessage: "votre mot de passe doit faire minimum 8 caracteres !")] //validation du contenue titre (min et max)
@@ -32,6 +32,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\EqualTo(propertyPath: "password", message: "Vous n'avez pas tapés le meme mot de passe !")] //validation du contenue titre (min et max)
     public  ?string $confirm_password = null;
 
+    #[ORM\OneToMany(targetEntity: Trick::class, mappedBy: 'user')]
+    private $tricks = null;
+
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'user')]
+    private $comments = null;
     public function getId(): ?int
     {
         return $this->id;
