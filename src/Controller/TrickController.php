@@ -31,7 +31,6 @@ class TrickController extends AbstractController
     {
 
         $tricks = $repo->findAll();
-        // $images = $repo_image->findBy(['trick' => $trick->getId()]);
 
         return $this->render('trick/index.html.twig', [
             'controller_name' => 'TrickController',
@@ -64,11 +63,25 @@ class TrickController extends AbstractController
         $form->handleRequest($request); //analyser la requete http pour analyser si l'ont soumis ou envoie la requete
 
         if ($form->isSubmitted() && $form->isValid()) {
+            //enregistrer l'image principale
+            $imageP = $form->get('image')->getData();
+            $fichier_imageP = $trick->getId() . '_' . md5(uniqid()) . '.' . $imageP->guessExtension();
+            //copier le fichier imageP dans le dossier uploads
+            $imageP->move(
+                $this->getParameter('images_directory'),
+                $fichier_imageP
+            );
+            $imgP = new Image();
+            $imgP->setName($fichier_imageP);
+            $imgP->setPath($this->getParameter('images_directory') . '/' . $fichier_imageP);
+            $trick->setImage($fichier_imageP);
+
             //on recupere les images transmises
             $images = $form->get('images')->getData();
             foreach ($images as $image) {
                 //générer un nouveau nom de fichier
-                $fichier = md5(uniqid()) . '.' . $image->guessExtension();
+
+                $fichier = $trick->getTitle() . '_' . md5(uniqid()) . '.' . $image->guessExtension();
                 //TO Do créer un dossier par trick
 
 
@@ -80,7 +93,7 @@ class TrickController extends AbstractController
                 //on stocke l'image dans la BDD
                 $img = new Image();
                 $img->setName($fichier);
-                $img->setPath($fichier);
+                $img->setPath($this->getParameter('images_directory') . $fichier);
                 $trick->addImage($img);
             }
             if (!$trick->getID()) { //si le trick n'a pas d'identifiant donc il s'agit de création
@@ -120,22 +133,7 @@ class TrickController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            //on recupere les images transmises
-            //  $images = $form->get('images')->getData();
-            // foreach ($images as $image) {
-            //générer un nouveau nom de fichier
-            //   $fichier = md5(uniqid()) . '.' . $image->guessExtension();
-            //copier le fichier dans le dossier uploads
-            //   $image->move(
-            //    $this->getParameter('images_directory'),
-            //     $fichier
-            // );
-            //on stocke l'image dans la BDD
-            // $img = new Image();
-            //$img->setName($fichier);
-            //$img->setPath($fichier);
-            // $trick->addImage($img);
-            //}
+
             $comment->setCreatedAt(new \DateTimeImmutable());
             $comment->setTrick($trick);
 
@@ -164,7 +162,7 @@ class TrickController extends AbstractController
         $manager->remove($trick);
         $manager->flush();
 
-        return $this->redirectToRoute("trick");
+        return $this->redirectToRoute("home");
     }
 
     #[Route("/supprime/image/{id}", name: "trick_delete_image", methods: ["DELETE"])]
